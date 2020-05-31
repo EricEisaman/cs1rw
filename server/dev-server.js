@@ -1,0 +1,1 @@
+require('/app/src/server/server.js').start();

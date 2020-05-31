@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <script src="cs1-game-engine.js"></script>
+  </head>
+  <body>
+    <script>
+      CS1.onReady(() => {
+        const curve = new THREE.QuadraticBezierCurve(
+          new THREE.Vector2(0, 1),
+          new THREE.Vector2(1, 4),
+          new THREE.Vector2(6, 0)
+        );
+        const points = curve.getPoints(50);
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+        const curveObject = new THREE.Line(geometry, material);
+        curveObject.rotation.y = Math.PI / 2;
+        window.curve = curveObject
+        const curveEntity = document.createElement("a-entity");
+        curveEntity.object3D.add(curveObject);
+        curveEntity.setAttribute("id", "curve-entity");
+        window.curveEntity = curveEntity;
+        const pu = document.createElement("a-sphere");
+        pu.setAttribute("color", "yellow");
+        pu.setAttribute("id", "pickup");
+        pu.object3D.scale.multiplyScalar(0.3);
+        const v = curve.getPoint(1);
+        pu.object3D.position.z = -v.x;
+        pu.object3D.position.y = v.y;
+        window.pickup = pu;
+        document.addEventListener("keyup", e => {
+          if (e.code == "KeyP") {
+            let count = 1;
+            const loop = setInterval(e => {
+              const v = curve.getPoint(count);
+              console.log(v);
+              count -= 0.01;
+              pu.object3D.position.z = -v.x;
+              pu.object3D.position.y = v.y;
+              if (count <= 0) clearInterval(loop);
+            }, 20);
+          }
+        });
+
+        CS1.myPlayer.avatar.appendChild(pu);
+        CS1.myPlayer.avatar.appendChild(curveEntity);
+
+        const instances = document.createElement("gltf-instances");
+        CS1.scene.appendChild(instances);
+        CS1.myPlayer.setAttribute("jump", "speed:25");
+        console.log(CS1.myPlayer.components.player);
+        CS1.game.addEnvironment();
+        CS1.game.start();
+
+
+      // for vertex animation ( much faster in vertex shader )  
+      //.geometry.attributes.position.array
+      //.geometry.attributes.position.needsUpdate  
+        
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1 @@
+import {game} from './modules/components/game';
